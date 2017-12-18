@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2f442ee040756a4792af332711ab29e, type: 3}
+  m_Name: Card_Image
+  m_EditorClassIdentifier: 
+  spade_Card:
+  - {fileID: 21300000, guid: cbbfbaf92e073be4f87199ff43991a09, type: 3}
+  - {fileID: 21300000, guid: d9c27c9ec45fb464c88ec8cba560ad19, type: 3}
+  - {fileID: 21300000, guid: 19da446d48b1e434e88a647457931ea6, type: 3}
+  - {fileID: 21300000, guid: 096e1ca02a0e3204aab208ba0b5a3982, type: 3}
+  - {fileID: 21300000, guid: b2d84962240190c4a81da2e100ba15bb, type: 3}
+  - {fileID: 21300000, guid: cbba877810aadf945b968a3dfde64326, type: 3}
+  - {fileID: 21300000, guid: 856efcde2d7d87b48a6249f7db42957b, type: 3}
+  - {fileID: 21300000, guid: af18fcfe23ae985488a8647f2e4ba55e, type: 3}
+  - {fileID: 21300000, guid: c86b2b8243f7db84da5a19116e9a43fb, type: 3}
+  - {fileID: 21300000, guid: 547c4aa97c38f3f41b771d6ce70b107a, type: 3}
+  - {fileID: 21300000, guid: bd8a04d3fd181784d9701e72dd73f851, type: 3}
+  - {fileID: 21300000, guid: c043e44b8c039b34f978a8c28aec9d0b, type: 3}
+  - {fileID: 21300000, guid: bc7895bd337033d4992b4e9fc5527bae, type: 3}
+  club_Card:
+  - {fileID: 21300000, guid: 4da6d2477d84bb540aa470e51603551e, type: 3}
+  - {fileID: 21300000, guid: 53daae45b44cb3d4bb028e969bf0947b, type: 3}
+  - {fileID: 21300000, guid: b3550ef2cb5716f4eb9a68be77f87496, type: 3}
+  - {fileID: 21300000, guid: 26450c0ac036ab944a79a82290fd8016, type: 3}
+  - {fileID: 21300000, guid: feeedaf56048e4544904423470b0f757, type: 3}
+  - {fileID: 21300000, guid: d786d8d93df1c764da24dfa745e198fa, type: 3}
+  - {fileID: 21300000, guid: b617a5b7b6d633d4d93007cb2b4dc827, type: 3}
+  - {fileID: 21300000, guid: fcfa2f301d850f044b9d2bbfa1456532, type: 3}
+  - {fileID: 21300000, guid: d141ca1acdf1e384a85dbb8385dc2f23, type: 3}
+  - {fileID: 21300000, guid: 96943dd49215d534ca7f11c549fe19eb, type: 3}
+  - {fileID: 21300000, guid: 73347707011c7644596d43ed98a84778, type: 3}
+  - {fileID: 21300000, guid: 74eab3b78300c724ea69c5a231857ad9, type: 3}
+  - {fileID: 21300000, guid: f556b9f928710e643b7e064fb6321c5e, type: 3}
+  diamond_Card:
+  - {fileID: 21300000, guid: 4834dd31162d73340968375396a46437, type: 3}
+  - {fileID: 21300000, guid: 617807d505a579e4e99dd090c06605bc, type: 3}
+  - {fileID: 21300000, guid: e14ee962c254bb94d818fe2de9f0842e, type: 3}
+  - {fileID: 21300000, guid: b5a08a4426989034695f10e8a28b980f, type: 3}
+  - {fileID: 21300000, guid: bda04201b8082f147ba493981b5a1f5d, type: 3}
+  - {fileID: 21300000, guid: b40fc6d6fd71ab24aa7c171aa80d77d9, type: 3}
+  - {fileID: 21300000, guid: 2b9dc89fd88d07648ad5cdea2c22345b, type: 3}
+  - {fileID: 21300000, guid: 99fc30d21e21ee041b1e3c1ba0e0667a, type: 3}
+  - {fileID: 21300000, guid: 8932dd24392f91a41a15d1b3531a9ef7, type: 3}
+  - {fileID: 21300000, guid: ba5e0bc6f1b5cce40bbae46842ec657b, type: 3}
+  - {fileID: 21300000, guid: dddb4b8efd7083b4cbc3a69a219ad6c0, type: 3}
+  - {fileID: 21300000, guid: 3801d6a84b245fe47a2b316dfe75ac63, type: 3}
+  - {fileID: 21300000, guid: aac429be7a742ee45ad15ad65aefa5c5, type: 3}
+  heart_Card:
+  - {fileID: 21300000, guid: 10eb4c21162a5dd4ea476c6498701a04, type: 3}
+  - {fileID: 21300000, guid: 801f716569627084882759e43cc503b9, type: 3}
+  - {fileID: 21300000, guid: b1daff7ade30563478b2e93750a2a4f5, type: 3}
+  - {fileID: 21300000, guid: b3db834c8b1d5c24c897be70d8c3d3f2, type: 3}
+  - {fileID: 21300000, guid: ab1806d0b3180124fbd0f077eeddce71, type: 3}
+  - {fileID: 21300000, guid: 7a05a789c3117b243bd5cd7f6f715159, type: 3}
+  - {fileID: 21300000, guid: 9d71256ac021b7a4aaea7f46e2434e05, type: 3}
+  - {fileID: 21300000, guid: f75bd632bf6659a48ab07aaf37c0cd83, type: 3}
+  - {fileID: 21300000, guid: 1752b170e0b465d40a656010065e21d3, type: 3}
+  - {fileID: 21300000, guid: 58978734612443e498e38db7d6fd3aa3, type: 3}
+  - {fileID: 21300000, guid: ad69ff6696a5a614987cb35ad6a04c0f, type: 3}
+  - {fileID: 21300000, guid: 0eccfdff45f06ea4693868470199b16b, type: 3}
+  - {fileID: 21300000, guid: ab032f3253da19e4da7b3dd7d917f829, type: 3}
+  back_Card: {fileID: 21300000, guid: 88d71bf087fc87f4dace43c22c116e58, type: 3}

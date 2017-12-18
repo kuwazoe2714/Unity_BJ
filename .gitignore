@@ -1,0 +1,11 @@
+/Library
+/Temp
+/Build
+/.vs*
+/*.sln
+/*.csproj
+/*.user
+/obj
+/Assets/BJ/Texture*
+/Assets/BJ/Resources*
+/Assets/uGUI_test/texture*
