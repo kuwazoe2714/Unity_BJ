@@ -5,19 +5,22 @@ using UnityEngine.UI;
 
 public class Manager : MonoBehaviour {
 
-    [SerializeField]
-    private GameObject card_Pre;                                    // カードオブジェクトのPrefab設定用
-    [SerializeField]
-    private Canvas canvas;                                          // 親に当たるキャンバス設定用
-    [SerializeField]
-    private Player player;
-    [SerializeField]
-    private Player croupier;
+    // カードオブジェクトのPrefab設定用
+    [SerializeField] private GameObject card_Pre;
+    // 親に当たるキャンバス設定用
+    [SerializeField] private Canvas canvas;
+    // プレイヤーのキャンバス設定用
+    [SerializeField] private Player player;
+    // ディーラーのキャンバス設定用
+    [SerializeField] private Player croupier;
+    // 「Hit」ボタン設定用
+    [SerializeField] private Button hitButton;
+    // 「Stand」ボタン設定用
+    [SerializeField] private Button standButton;
 
     public static List<GameObject> Card_List { get; set; }          // デッキ格納用リスト
     private List<Player> Player_List;                               // プレイヤー格納リスト
     private int drawCnt;
-    private int playerNumber = 1;
 
     // 生成時処理関数
     private void Awake()
@@ -32,51 +35,12 @@ public class Manager : MonoBehaviour {
         DeckShuffle();
         // デッキから引かれたカードカウント用(でも「リスト名.Count」で現在の値取れるからいらなくない…？)
         drawCnt = 0;
-
-        // ゲーム参加人数分生成
-        /*
-        for (int i = 0; i < playerNumber; i++)
-        {
-            var createPlayer = Instantiate(player, this.transform);
-            createPlayer.transform.position = new Vector3(0.0f, -134.75f);
-            createPlayer.CroupierFlag = false;
-            Player_List.Add(createPlayer);
-        }
-        */
-    }
-
-    private void Start()
-    {
-        player.CroupierFlag = false;
-        Player_List.Add(player);
-        croupier.CroupierFlag = true;
-        Player_List.Add(croupier);
-
-        // 参加者全員に初期手札配布
-        for (int i = 0; i < 2; i++)
-        {
-            for( int drawCard = 0; drawCard < 2; drawCard++)
-                DeckDrawCard(Player_List[i]);
-
-            Player_List[i].HitUpdate();
-        }
     }
 
     // Update is called once per frame
-    void Update ()
+    void Start ()
     {
-        // ゲーム処理関数
-        Game();
-
-        // 結果表示
-        if ((Player_List[0].MyStatus == Status.STATUS.STATUS_STAND &&
-            Player_List[1].MyStatus == Status.STATUS.STATUS_STAND) ||
-            Player_List[0].MyStatus == Status.STATUS.STATUS_BURST)
-        {
-            var winner = Result.FinalResult(Player_List);
-            winner = new Color(255, 255,255);
-//            Debug.Log("バチバチの点数バトル");
-        }
+        StartCoroutine(Update());
 	}
 
     // デッキ生成処理関数
@@ -86,17 +50,18 @@ public class Manager : MonoBehaviour {
         {
             for (int number = 1; number < (int)Card.Number.NUMBER_MAX; number++)
             {
-                var card = Instantiate(card_Pre, canvas.transform);
-                card.transform.position = new Vector3(card.transform.position.x + 350, card.transform.position.y + 150);
-                card.GetComponent<Card>().MyDesign = (Card.Design)design;
-                card.GetComponent<Card>().MyNumber = (Card.Number)number;
-                card.GetComponent<Image>().sprite = card.GetComponent<Card>().GetSprite(number + design * 13);
-                Card_List.Add(card);
+                var card_Instan = Instantiate(card_Pre, canvas.transform);
+                var card = card_Instan.GetComponent<Card>();
+                card.transform.Translate(new Vector3(350f, 150f));
+                card.MyDesign = (Card.Design)design;
+                card.MyNumber = (Card.Number)number;
+                card.GetComponent<Image>().sprite = card.GetSprite(number + design * 13);
+                Card_List.Add(card_Instan);
             }
         }
 
         var backcard = Instantiate(card_Pre, canvas.transform);
-        backcard.transform.position = new Vector3(backcard.transform.position.x + 350, backcard.transform.position.y + 150);
+        backcard.transform.Translate(new Vector3(350, 150));
         backcard.GetComponent<Image>().sprite = backcard.GetComponent<Card>().GetSprite(Card_List.Count+1);
     }
 
@@ -121,16 +86,18 @@ public class Manager : MonoBehaviour {
     public void DeckDrawCard(Player player)
     {
         // プレイヤーの手札が5枚に達していないならカードを引く
-        if (player.MyCard.Count < 5)
+        if (player.MyCard.Count < 5 || player.GetPlayerScore <= 21 )
         {
-            // デッキからカードを受け取る
             var drawCard = Card_List[drawCnt++];
-            // プレイヤーの手札リストに引いたカードを追加
             player.MyCard.Add(drawCard);
-            // カードを引いた人のカード置き場が親になる様にデッキから引いたカードをセット
             drawCard.transform.parent = player.MyHandPos[player.MyCard.Count - 1].transform;
-            // 親の位置(カード置き場)にカードを移動
-            drawCard.transform.position = player.MyHandPos[player.MyCard.Count - 1].transform.position;
+            var from = drawCard.transform.position;
+            var to = player.MyHandPos[player.MyCard.Count - 1].transform.position;
+
+            StartCoroutine(EasingMove(from,to,drawCard));
+            // アニメーション中はボタン押させないように
+            hitButton.interactable = false;
+            standButton.interactable = false;
         }
     }
 
@@ -164,13 +131,85 @@ public class Manager : MonoBehaviour {
 
                 // 「Stand」する意思を見せた
                 case Status.STATUS.STATUS_STAND:
-                    Debug.Log("Stand");
                     break;
             }
         }
+    }
 
+    /**
+     * <summary> ゲーム更新 </summary>
+     */
+    private IEnumerator Update()
+    {
+        yield return GameInit();
+        yield return GameUpdate();
+        yield return GameResult();
     }
 
 
+    /**
+     * <summary> 初期化処理コルーチン </summary>
+     */
+    private IEnumerator GameInit()
+    {
+        player.CroupierFlag = false;
+        Player_List.Add(player);
+        croupier.CroupierFlag = true;
+        Player_List.Add(croupier);
 
+        // 参加者全員に初期手札配布
+        for (int i = 0; i < 2; i++)
+        {
+            for (int drawCard = 0; drawCard < 2; drawCard++)
+                DeckDrawCard(Player_List[i]);
+
+            Player_List[i].HitUpdate();
+        }
+
+        yield return null;
+    }
+
+    /**
+     * <summary> 更新処理コルーチン </summary>
+     */
+    private IEnumerator GameUpdate()
+    {
+        // ゲーム処理関数
+        Game();
+
+        // 結果表示
+        if ((Player_List[0].MyStatus == Status.STATUS.STATUS_STAND &&
+            Player_List[1].MyStatus == Status.STATUS.STATUS_STAND) ||
+            Player_List[0].MyStatus == Status.STATUS.STATUS_BURST)
+        {
+            var winner = Result.FinalResult(Player_List);
+            winner = new Color(255, 255, 255);
+        }
+
+        yield return null;
+    }
+
+    /**
+     * <summary> 終了処理コルーチン </summary>
+     */
+    private IEnumerator GameResult()
+    {
+        Debug.Log("ゲーム終わり！");
+        yield return null;
+    }
+
+    /**
+     * <summary> カードを引いた時にアニメーションさせるコルーチン </summary>
+     */
+    private IEnumerator EasingMove( Vector3 fromPos, Vector3 toPos, GameObject moveCard )
+    {
+        yield return easing.CreateVector3(easing.easeInQuad, fromPos, toPos, 1,
+            (x) => moveCard.transform.position = x);
+        Debug.Log("カード移動完了！");
+
+        // TODO ここにボタン復活処理が書かれていたがなにかおかしい
+
+        hitButton.interactable = true;
+        standButton.interactable = true;
+    }
 }

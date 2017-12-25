@@ -3,9 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public class PlayerChoice : CustomYieldInstruction
+{
+    public static bool hitOn = false;
+
+    public override bool keepWaiting
+    {
+        get
+        {
+            // 「Hit」が押されていないなら
+            if(!hitOn)
+            {
+                return hitOn;
+            }
+            else
+            {
+                return hitOn;
+            }
+        }
+    }
+}
+
 public class Player : MonoBehaviour
 {
-
     private int myCardCnt;                              // プレイヤーの手札枚数
     private int playerScore;                            // プレイヤーの点数
     public int GetPlayerScore { get { return playerScore; } }   // プレイヤー点数のゲッターだけ作成
@@ -69,6 +89,11 @@ public class Player : MonoBehaviour
     public void PlayerHit()
     {
         MyStatus = Status.STATUS.STATUS_HIT;
+        // 現在、「Hit」ボタンが押されていないなら
+        if( Wait.IsWait != true )
+        {
+            PlayerChoice.hitOn = true;
+        }
     }
 
     /**
@@ -78,6 +103,15 @@ public class Player : MonoBehaviour
     {
         MyStatus = Status.STATUS.STATUS_STAND;
     }
+
+    /**
+     * <summary> プレイヤーの行動コルーチン </summary>
+     */
+    private IEnumerator PlayerTurn()
+    {
+        yield return null;
+    }
+
 
     /**
      * <summary> 手札増えた時の処理 </summary>
@@ -90,21 +124,6 @@ public class Player : MonoBehaviour
         BurstStateCheck(playerScore);
         // 点数表示
         ScoreDisplay();
-
-        // プレイヤー以外の場合
-        // 2枚目以降の手札を隠す処理
-        //
-        // TODO ありえない…
-        /*
-        if(CroupierFlag && 1 < MyCard.Count )
-        {
-            for (int screenhand = 1; screenhand < MyCard.Count; screenhand++)
-            {
-                MyCard[screenhand].GetComponent<Image>().sprite = Card.cardSprite[52];
-            }
-        }
-        */
-
     }
 
     /**
