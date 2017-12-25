@@ -5,21 +5,13 @@ using UnityEngine.UI;
 
 public class PlayerChoice : CustomYieldInstruction
 {
-    public static bool hitOn = false;
+    public static bool hitOn = true;
 
     public override bool keepWaiting
     {
         get
         {
-            // 「Hit」が押されていないなら
-            if(!hitOn)
-            {
-                return hitOn;
-            }
-            else
-            {
-                return hitOn;
-            }
+            return hitOn;
         }
     }
 }
@@ -38,9 +30,9 @@ public class Player : MonoBehaviour
     public List<GameObject> MyCard { get; set; }        // プレイヤーが持っている手札
     public List<GameObject> MyHandPos { get; set; }     // プレイヤーの手札管理リスト
 
-    private bool IsBust { get;set; }
+    public bool IsBust { get;set; }
     public Status.STATUS MyStatus { get; set; }         // プレイヤーの状態(削除予定)
-    public bool CroupierFlag { get; set; }              // 自分はディーラーかフラグ(falseならPlayer)
+    public bool IsCroupier { get; set; }              // 自分はディーラーかフラグ(falseならPlayer)
 
     // 初期化処理関数
     private void Awake()
@@ -62,7 +54,7 @@ public class Player : MonoBehaviour
         }
 
         myCardCnt = 0;
-
+        IsBust = false;
         MyStatus = Status.STATUS.STATUS_NONE;
     }
 
@@ -71,15 +63,6 @@ public class Player : MonoBehaviour
      */
     public void Croupier_Update()
     {
-        // ディーラーの処理
-        if (playerScore < 17)
-        {
-            MyStatus = Status.STATUS.STATUS_HIT;
-        }
-        else
-        {
-            MyStatus = Status.STATUS.STATUS_STAND;
-        }
 
     }
 
@@ -89,10 +72,10 @@ public class Player : MonoBehaviour
     public void PlayerHit()
     {
         MyStatus = Status.STATUS.STATUS_HIT;
-        // 現在、「Hit」ボタンが押されていないなら
+        // 他の処理をやっている場合は押せない
         if( Wait.IsWait != true )
         {
-            PlayerChoice.hitOn = true;
+            PlayerChoice.hitOn = false;
         }
     }
 
@@ -105,13 +88,21 @@ public class Player : MonoBehaviour
     }
 
     /**
-     * <summary> プレイヤーの行動コルーチン </summary>
+     * <summary> ディーラーの行動コルーチン </summary>
      */
-    private IEnumerator PlayerTurn()
+    public IEnumerator CroupireTurn()
     {
+        // ディーラーの処理
+        if (playerScore < 17)
+        {
+            MyStatus = Status.STATUS.STATUS_HIT;
+        }
+        else
+        {
+            MyStatus = Status.STATUS.STATUS_STAND;
+        }
         yield return null;
     }
-
 
     /**
      * <summary> 手札増えた時の処理 </summary>
@@ -183,11 +174,7 @@ public class Player : MonoBehaviour
     {
         if( 21 < myScore )
         {
-            MyStatus = Status.STATUS.STATUS_BURST;
-        }
-        else
-        {
-            MyStatus = Status.STATUS.STATUS_NONE;
+            IsBust = true;
         }
     }
 

@@ -142,5 +142,4 @@ public class manager : MonoBehaviour {
         hitButton.interactable = true;
         Debug.Log("更新おわおわり");
     }
-
 }

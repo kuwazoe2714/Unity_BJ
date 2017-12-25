@@ -86,7 +86,7 @@ public class Manager : MonoBehaviour {
     public void DeckDrawCard(Player player)
     {
         // プレイヤーの手札が5枚に達していないならカードを引く
-        if (player.MyCard.Count < 5 || player.GetPlayerScore <= 21 )
+        if (player.MyCard.Count < 5)
         {
             var drawCard = Card_List[drawCnt++];
             player.MyCard.Add(drawCard);
@@ -101,41 +101,6 @@ public class Manager : MonoBehaviour {
         }
     }
 
-    // ゲーム内処理
-    void Game()
-    {
-        for(int i = 0; i < 2; i++)
-        {
-            // バーストチェック(バーストしていない人だけ更新する)
-            if (Player_List[i].MyStatus == Status.STATUS.STATUS_BURST)
-            {
-                continue;
-            }
-            // TODO プレイヤーかどうかチェック
-            if (Player_List[i].CroupierFlag == true)
-            {
-                Player_List[i].Croupier_Update();
-            }
-            // バーストしていないなら聞く
-            switch (Player_List[i].MyStatus)
-            {
-                // まだ何も行動していない
-                case Status.STATUS.STATUS_NONE:
-                    return;
-
-                // 「Hit」する意思を見せた
-                case Status.STATUS.STATUS_HIT:
-                    DeckDrawCard(Player_List[i]);
-                    Player_List[i].HitUpdate();
-                    break;
-
-                // 「Stand」する意思を見せた
-                case Status.STATUS.STATUS_STAND:
-                    break;
-            }
-        }
-    }
-
     /**
      * <summary> ゲーム更新 </summary>
      */
@@ -146,15 +111,14 @@ public class Manager : MonoBehaviour {
         yield return GameResult();
     }
 
-
     /**
      * <summary> 初期化処理コルーチン </summary>
      */
     private IEnumerator GameInit()
     {
-        player.CroupierFlag = false;
+        player.IsCroupier = false;
         Player_List.Add(player);
-        croupier.CroupierFlag = true;
+        croupier.IsCroupier = true;
         Player_List.Add(croupier);
 
         // 参加者全員に初期手札配布
@@ -174,18 +138,34 @@ public class Manager : MonoBehaviour {
      */
     private IEnumerator GameUpdate()
     {
-        // ゲーム処理関数
-        Game();
-
-        // 結果表示
-        if ((Player_List[0].MyStatus == Status.STATUS.STATUS_STAND &&
-            Player_List[1].MyStatus == Status.STATUS.STATUS_STAND) ||
-            Player_List[0].MyStatus == Status.STATUS.STATUS_BURST)
+        while (PlayerChoice.hitOn)
         {
-            var winner = Result.FinalResult(Player_List);
-            winner = new Color(255, 255, 255);
-        }
+            foreach (Player player in Player_List)
+            {
+                if (player.IsBust)
+                {
+                    continue;
+                }
 
+                if (player.IsCroupier)
+                {
+                    yield return player.CroupireTurn();
+                }
+                else
+                {
+                    if (!PlayerChoice.hitOn)
+                    {
+                        DeckDrawCard(player);
+                        player.HitUpdate();
+                        yield return test_wait.Create();
+                    }
+                    else
+                    {
+                        yield return new PlayerChoice();
+                    }
+                }
+            }
+        }
         yield return null;
     }
 
@@ -194,6 +174,14 @@ public class Manager : MonoBehaviour {
      */
     private IEnumerator GameResult()
     {
+        // 結果表示
+        if ((Player_List[0].MyStatus == Status.STATUS.STATUS_STAND &&
+            Player_List[1].MyStatus == Status.STATUS.STATUS_STAND) ||
+            Player_List[0].MyStatus == Status.STATUS.STATUS_BURST)
+        {
+            var winner = Result.FinalResult(Player_List);
+            winner = new Color(255, 255, 255);
+        }
         Debug.Log("ゲーム終わり！");
         yield return null;
     }
